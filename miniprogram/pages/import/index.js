@@ -10,29 +10,42 @@ const MAX_PAGE_WIDTH = 1600;
 const HINT_CAPTURE = '拍一整页作业，尽量把题号拍全、画面平整。只识别题号上的手写标记（√／☆／△／○），未标记的题不入库。';
 const HINT_PREVIEW = '核对每题标记：点标记可切换（√→☆→△→无），只有勾选的行会保存。';
 
-// 单题模式默认用较准的 t1，但它偶尔会超过小程序 15 秒窗口；一次超时就换快的 hy-vision 兜底，避免同一题反复等 15 秒。
-const FALLBACK_MODEL = 'hy-vision-2.0-instruct';
+// 两段式判符：先用快的 hy-vision 覆盖全页（每题约 2 秒，√/☆ 判得准）；
+// 它返回 none 的题再用较准但可能超过 15 秒窗口的 t1 复核，且每页最多复核 3 题，保证整页耗时有上界。
+const FAST_MODEL = 'hy-vision-2.0-instruct';
+const SLOW_MODEL = 'hunyuan-t1-vision-20250916';
+const MAX_SLOW_CHECKS = 3;
 
 function requestBandMark(imageBase64, questionNo, model) {
-  const payload = {
+  return callCloudFunction('paper-marks', {
     confirmedFullPage: true,
     mode: 'single',
     questionNo,
     mimeType: 'image/jpeg',
     imageBase64,
-  };
-  if (model) {
-    payload.model = model;
-  }
-  return callCloudFunction('paper-marks', payload);
+    model,
+  });
 }
 
-async function requestBandMarkWithFallback(imageBase64, questionNo) {
+async function detectBandMark(imageBase64, questionNo) {
   try {
-    return await requestBandMark(imageBase64, questionNo);
-  } catch (firstError) {
-    console.warn('[import] mark fallback model', questionNo, describeError(firstError));
-    return requestBandMark(imageBase64, questionNo, FALLBACK_MODEL);
+    const fast = await requestBandMark(imageBase64, questionNo, FAST_MODEL);
+    if (fast && fast.mark && fast.mark !== 'none') {
+      return fast;
+    }
+    return { ...fast, mark: 'none', fastOnly: true };
+  } catch (error) {
+    console.warn('[import] fast mark failed', questionNo, describeError(error));
+    return { mark: 'none', failed: true };
+  }
+}
+
+async function slowCheckBandMark(imageBase64, questionNo) {
+  try {
+    return await requestBandMark(imageBase64, questionNo, SLOW_MODEL);
+  } catch (error) {
+    console.warn('[import] slow mark failed', questionNo, describeError(error));
+    return { mark: 'none', failed: true };
   }
 }
 
@@ -192,22 +205,36 @@ Page({
       this.setData({ step: 'scanning' });
       const cropper = await createBandCropper(this);
       const results = [];
+      const bandImages = new Map();
       for (let position = 0; position < plan.items.length; position += 1) {
         const item = plan.items[position];
         this.setData({ scanText: `正在判断第 ${item.questionNo} 题的标记（${position + 1}/${plan.items.length}）` });
         try {
           const crop = await cropper({ src: photo.tempFilePath, band: item.band });
           const bandBase64 = await readFileAsBase64(crop.tempFilePath);
-          const markResult = await requestBandMarkWithFallback(bandBase64, item.questionNo);
+          bandImages.set(item.index, bandBase64);
+          const markResult = await detectBandMark(bandBase64, item.questionNo);
           results.push({
             index: item.index,
             mark: markResult && markResult.mark,
             confidence: markResult && markResult.confidence,
+            failed: Boolean(markResult && markResult.failed),
           });
         } catch (error) {
           console.warn('[import] mark failed', item.questionNo, describeError(error));
           results.push({ index: item.index, mark: 'none', failed: true });
         }
+      }
+
+      const pending = results.filter((result) => result.mark === 'none' && bandImages.has(result.index));
+      for (let position = 0; position < pending.length && position < MAX_SLOW_CHECKS; position += 1) {
+        const target = pending[position];
+        const item = plan.items.find((entry) => entry.index === target.index);
+        this.setData({ scanText: `第 ${item.questionNo} 题再确认一次（${position + 1}/${Math.min(pending.length, MAX_SLOW_CHECKS)}）` });
+        const slow = await slowCheckBandMark(bandImages.get(target.index), item.questionNo);
+        target.mark = (slow && slow.mark) || 'none';
+        target.confidence = slow && slow.confidence;
+        target.failed = Boolean(slow && slow.failed);
       }
 
       const rows = pageScan.buildPreviewRows({ items: plan.items, results });
