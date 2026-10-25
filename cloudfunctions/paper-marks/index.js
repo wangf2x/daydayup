@@ -1,6 +1,7 @@
 console.log('[paper-marks] boot start', process.version);
 
 const { createPaperMarksHandler } = require('./handler');
+const { resolveMarkModel } = require('./model-selection');
 
 function createMockVision() {
   return {
@@ -78,11 +79,16 @@ function readCallerIdentity() {
 exports.main = async function main(event) {
   try {
     const requestedModel = event && typeof event.model === 'string' && event.model ? event.model : undefined;
+    const model = resolveMarkModel({
+      mode: event && event.mode === 'single' ? 'single' : 'page',
+      requestedModel,
+      environment: process.env,
+    });
     const handler = createPaperMarksHandler({
       getCaller: async () => readCallerIdentity(),
       vision: {
         detectMarks(request) {
-          return getVision().detectMarks({ ...request, model: requestedModel });
+          return getVision().detectMarks({ ...request, model });
         },
       },
     });

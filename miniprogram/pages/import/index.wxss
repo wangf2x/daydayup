@@ -78,6 +78,178 @@
   border: 1rpx solid #d6e2ff;
 }
 
+.progress {
+  display: flex;
+  align-items: center;
+  margin-top: 30rpx;
+  padding: 34rpx 28rpx;
+  border-radius: 24rpx;
+  background: #fff;
+  box-shadow: 0 10rpx 26rpx rgba(31, 36, 48, 0.06);
+}
+
+.progress-dot {
+  width: 18rpx;
+  height: 18rpx;
+  margin-right: 18rpx;
+  border-radius: 50%;
+  background: #3b7cff;
+  animation: pulse 1.1s ease-in-out infinite;
+}
+
+.progress-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #43547a;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.summary {
+  display: flex;
+  margin-top: 8rpx;
+  padding: 26rpx 10rpx;
+  border-radius: 24rpx;
+  background: #fff;
+  box-shadow: 0 10rpx 26rpx rgba(31, 36, 48, 0.06);
+}
+
+.summary-item {
+  flex: 1;
+  text-align: center;
+}
+
+.summary-item--active .summary-num {
+  color: #3b7cff;
+}
+
+.summary-num {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #1f2430;
+}
+
+.summary-label {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #8b95a6;
+}
+
+.row-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 26rpx 6rpx 14rpx;
+}
+
+.row-tools-hint {
+  font-size: 23rpx;
+  color: #8b95a6;
+}
+
+.row-tools-actions {
+  display: flex;
+}
+
+.row-tool {
+  margin-left: 24rpx;
+  font-size: 24rpx;
+  color: #3b7cff;
+}
+
+.qrow {
+  display: flex;
+  margin-bottom: 16rpx;
+  padding: 22rpx 24rpx;
+  border-radius: 22rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 20rpx rgba(31, 36, 48, 0.05);
+}
+
+.qrow--on {
+  border-left: 6rpx solid #3b7cff;
+}
+
+.qrow-check {
+  padding: 4rpx 20rpx 4rpx 0;
+}
+
+.qrow-box {
+  width: 40rpx;
+  height: 40rpx;
+  border: 2rpx solid #c8d3e6;
+  border-radius: 10rpx;
+  line-height: 36rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #fff;
+}
+
+.qrow-box--on {
+  background: #3b7cff;
+  border-color: #3b7cff;
+}
+
+.qrow-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.qrow-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.qrow-no {
+  margin-right: 16rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #1f2430;
+}
+
+.qrow-mark {
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: #fff;
+}
+
+.qrow-mark--check {
+  background: #16a34a;
+}
+
+.qrow-mark--star {
+  background: #f59e0b;
+}
+
+.qrow-mark--triangle {
+  background: #8b5cf6;
+}
+
+.qrow-mark--none {
+  background: #eef1f7;
+  color: #7b8698;
+}
+
+.qrow-failed {
+  margin-left: 12rpx;
+  font-size: 21rpx;
+  color: #d94a4a;
+}
+
+.qrow-stem {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  line-height: 1.55;
+  color: #58637a;
+  max-height: 76rpx;
+  overflow: hidden;
+}
+
 .field {
   margin-top: 28rpx;
   padding: 26rpx 28rpx;
@@ -146,4 +318,13 @@
   color: #43547a;
   font-size: 23rpx;
   line-height: 1.6;
+}
+
+/* 裁图用的离屏画布：移出可视区域，但必须保持可渲染尺寸。 */
+.band-canvas {
+  position: fixed;
+  left: -9999rpx;
+  top: 0;
+  width: 300px;
+  height: 200px;
 }

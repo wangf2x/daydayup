@@ -8,8 +8,8 @@
 
   <view class="shot shot--empty" wx:else bindtap="onChooseImage">
     <view class="shot-emoji">📷</view>
-    <view class="shot-title">拍照或从相册选择</view>
-    <view class="shot-sub">只保留一道题，尽量不要拍到作答过程</view>
+    <view class="shot-title">拍一整页作业</view>
+    <view class="shot-sub">题号要拍全，画面尽量平整不要歪</view>
   </view>
 
   <view class="actions" wx:if="{{step === 'capture'}}">
@@ -18,20 +18,104 @@
       class="btn"
       loading="{{busy}}"
       disabled="{{busy || !image}}"
-      bindtap="onRecognize"
-    >识别题干</button>
+      bindtap="onScanPage"
+    >识别标记</button>
     <button class="btn btn--ghost" disabled="{{busy}}" bindtap="onManualInput">手动录入</button>
   </view>
 
-  <block wx:if="{{step === 'confirm'}}">
+  <view class="progress" wx:if="{{step === 'scanning'}}">
+    <view class="progress-dot"></view>
+    <view class="progress-text">{{scanText}}</view>
+  </view>
+
+  <block wx:if="{{step === 'preview'}}">
+    <view class="summary">
+      <view class="summary-item">
+        <view class="summary-num">{{summary.total}}</view>
+        <view class="summary-label">切出题目</view>
+      </view>
+      <view class="summary-item">
+        <view class="summary-num">{{summary.marked}}</view>
+        <view class="summary-label">识别到标记</view>
+      </view>
+      <view class="summary-item summary-item--active">
+        <view class="summary-num">{{summary.selected}}</view>
+        <view class="summary-label">待保存</view>
+      </view>
+    </view>
+
+    <view class="row-tools">
+      <text class="row-tools-hint">点标记可切换类型</text>
+      <view class="row-tools-actions">
+        <text class="row-tool" data-selected="true" bindtap="onToggleAll">全选</text>
+        <text class="row-tool" data-selected="false" bindtap="onToggleAll">全不选</text>
+      </view>
+    </view>
+
+    <view wx:for="{{rows}}" wx:key="index" class="qrow {{item.selected ? 'qrow--on' : ''}}">
+      <view class="qrow-check" data-index="{{item.index}}" bindtap="onRowToggle">
+        <view class="qrow-box {{item.selected ? 'qrow-box--on' : ''}}">{{item.selected ? '✓' : ''}}</view>
+      </view>
+      <view class="qrow-body">
+        <view class="qrow-head">
+          <text class="qrow-no">第 {{item.questionNo}} 题</text>
+          <text
+            class="qrow-mark {{item.mark === 'none' ? 'qrow-mark--none' : 'qrow-mark--' + item.mark}}"
+            data-index="{{item.index}}"
+            catchtap="onRowMarkTap"
+          >{{item.mark === 'none' ? '＋ 标记' : item.symbol + ' ' + item.label}}</text>
+          <text class="qrow-failed" wx:if="{{item.failed}}">识别失败</text>
+        </view>
+        <view class="qrow-stem">{{item.stem}}</view>
+      </view>
+    </view>
+
+    <view class="badge" wx:if="{{skippedCount > 0}}">
+      有 {{skippedCount}} 道题没有坐标或超出单页上限，未做识别。
+    </view>
+
+    <view class="badge" wx:if="{{coarse}}">
+      这一页被切题识别成 1 道大题，可能漏掉其他题号上的标记。建议分两次拍，或拍得更清楚一些。
+    </view>
+
+    <view class="field">
+      <view class="field-label">归档科目</view>
+      <view class="chips">
+        <view
+          wx:for="{{subjects}}"
+          wx:key="id"
+          class="chip {{item.id === subjectId ? 'chip--active' : ''}}"
+          style="{{item.id === subjectId ? 'background:' + item.color + ';border-color:' + item.color : ''}}"
+          data-id="{{item.id}}"
+          bindtap="onSubjectTap"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="field-label">孩子</view>
+      <picker mode="selector" range="{{learners}}" range-key="nickname" value="{{learnerIndex}}" bindchange="onLearnerChange">
+        <view class="picker-value">{{learners[learnerIndex].nickname || '请选择孩子'}}</view>
+      </picker>
+    </view>
+
+    <view class="actions">
+      <button type="primary" class="btn" disabled="{{busy || summary.selected === 0}}" bindtap="onSaveAll">
+        保存 {{summary.selected}} 题到错题集
+      </button>
+      <button class="btn btn--ghost" disabled="{{busy}}" bindtap="onRetake">重新拍照</button>
+    </view>
+  </block>
+
+  <block wx:if="{{step === 'manual'}}">
     <view class="field">
       <view class="field-label">题干</view>
       <textarea
         class="textarea"
-        value="{{stem}}"
+        value="{{manualStem}}"
         placeholder="请输入题目内容"
         maxlength="2000"
-        bindinput="onStemInput"
+        bindinput="onManualStemInput"
         auto-height
       />
     </view>
@@ -57,15 +141,15 @@
       </picker>
     </view>
 
-    <view class="badge" wx:if="{{ocrComplete === false}}">识别可能不完整，请核对题干</view>
-
     <view class="actions">
-      <button type="primary" class="btn" disabled="{{busy}}" bindtap="onSave">保存到错题本</button>
-      <button class="btn btn--ghost" disabled="{{busy}}" bindtap="onRetake">重新拍照</button>
+      <button type="primary" class="btn" disabled="{{busy}}" bindtap="onSaveManual">保存到错题集</button>
+      <button class="btn btn--ghost" disabled="{{busy}}" bindtap="onRetake">返回拍照</button>
     </view>
   </block>
 
   <view class="tip">
-    <text>提示：题目会先保存在本机演示库中，后续接入家庭数据库后可多设备同步。</text>
+    <text>提示：只有带标记的题会进入「整理」菜单，未标记的题不会被识别。题目暂存本机演示库，接入家庭数据库后可多设备同步。</text>
   </view>
+
+  <canvas type="2d" id="band-canvas" class="band-canvas"></canvas>
 </view>

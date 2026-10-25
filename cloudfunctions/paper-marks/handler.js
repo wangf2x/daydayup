@@ -8,8 +8,10 @@ const SINGLE_MARK_PROMPT = [
   '判定要点：',
   '1. 只看压在题号上或紧贴题号的手写符号；印刷体文字、印刷图形、根号、序号下划线都不算。',
   '2. 五角星与勾必须区分：有多个尖角或多圈叠成的星形判 star，不要判 check。',
-  '3. 圆圈与三角同属 triangle 类。',
-  '4. 没有看到任何手写符号时输出 mark 为 "none"，绝对不要为了凑答案而编造。',
+  '3. 圆圈与三角同属 triangle 类。只要题号附近出现任意闭合的圆圈或椭圆圈（哪怕画得歪、有缺口、和数字笔画粘连），一律判 triangle。',
+  '4. 只要出现由三条边围成的尖角形状（△），哪怕它压在数字上方、和数字笔画交叠，也判 triangle。',
+  '5. 手写符号常常只有一半压在题号上，另一半落在空白处；请查看整个区域，不要只看题号正中央。',
+  '6. 确认区域内确实没有任何手写痕迹时，才输出 mark 为 "none"。',
   '只输出 JSON，不要解释，不要代码块。',
   '输出格式：{"mark":"star","confidence":0.9}',
   'mark 只能是 check、star、triangle、none 之一。',
@@ -205,6 +207,7 @@ function createPaperMarksHandler({ getCaller, vision, maxBytes = 6 * 1024 * 1024
     const result = await vision.detectMarks({
       imageBytes,
       mimeType: typeof event.mimeType === 'string' && event.mimeType ? event.mimeType : 'image/jpeg',
+      mode: event.mode === 'single' ? 'single' : 'page',
       promptText: event.mode === 'single' ? SINGLE_MARK_PROMPT : SYSTEM_PROMPT,
     });
 

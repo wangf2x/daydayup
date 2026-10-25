@@ -4,7 +4,7 @@ This is an offline-testable family learning scaffold with a connected CloudBase 
 
 ## Current scope
 
-- Native WeChat Mini Program with a library-first navigation: `pages/home` (知识库 / 挑战赛 / 拍照上传 three entries, learner switcher, silent sign-in), `pages/library` (per-subject cards with mastery progress), `pages/subject` (错题集 / 挑战赛 tabs for one subject), `pages/contest` (数学赛 / 语文赛 / 英语赛 / 大综合赛 with personal best and a 设置 entry), `pages/settings` (跳题开关 / 难度 / 题量), `pages/challenge` (auto-graded contest runner), `pages/import` (capture → OCR → confirm → save), and `pages/question` (detail, edit, mastered toggle, delete).
+- Native WeChat Mini Program with a library-first navigation: `pages/home` (知识库 / 挑战赛 / 拍照上传 three entries, learner switcher, silent sign-in), `pages/library` (per-subject cards with mastery progress), `pages/subject` (错题集 / 挑战赛 tabs for one subject), `pages/contest` (数学赛 / 语文赛 / 英语赛 / 大综合赛 with personal best and a 设置 entry), `pages/settings` (跳题开关 / 难度 / 题量), `pages/challenge` (auto-graded contest runner), `pages/import` (整页拍照 → 切题 → 裁题号带 → 逐题判标记 → 预览确认 → 批量归档, plus manual entry), and `pages/question` (detail, edit, mastered toggle, delete).
 - `miniprogram/data/question-bank.js` ships a built-in 3–4 grade bank of 90 questions (30 each for Chinese, Maths, English) with `choice` / `fill` / `judge` types, accepted-answer aliases, and optional explanations. `miniprogram/services/contest.js` handles contest definitions, random sampling, answer normalisation/grading, and best-score history in `daydayup.contest-results.v1`.
 - Contest settings live in `pages/settings` and persist to `daydayup.contest-settings.v1`: an `allowSkip` switch (skip without answering and return to previous questions) and a question-count slider (5 / 10 / 15 / 20). The difficulty slider (难 / 中 / 易) is kept in the UI but disabled behind `DIFFICULTY_ENABLED = false` in `services/contest.js`, so contests currently draw from the whole difficulty range; `selectByDifficulty` and `difficultyOf` stay ready for when the switch is turned on. `pages/challenge` shows 上一题 / 跳过 / 下一题, keeps per-question `correct` / `wrong` / `skipped` state, and reports unanswered questions in the result screen.
 - Choice and judge questions are answered by tapping an option; fill-in questions use a real `<input>` so text answers (including fractions such as `1/2`) can be typed and are graded through the same normalisation.
@@ -18,11 +18,9 @@ This is an offline-testable family learning scaffold with a connected CloudBase 
 The automatic mark detector, Hunyuan generation, and exports are not implemented yet. Challenge contests are implemented on top of the built-in bank with on-device best scores. Questions currently live on-device only, so multi-device sync waits for the PostgreSQL repository. The mini program AppID and CloudBase environment ID are in local project configuration; no API keys or service secrets belong in the client.
 
 Every cloud function needs its own environment variables: `question-ocr` requires `OCR_TENCENT_SECRET_ID`, `OCR_TENCENT_SECRET_KEY`, and `OCR_TENCENT_REGION` before it can call OCR. `question-split` (page splitting via `QuestionSplitOCR`) needs the same three OCR variables. `paper-marks` (handwritten √ / ☆ / △ detection) selects its provider with `MARK_PROVIDER`:
-
-- `tokenhub` (default when `TOKENHUB_API_KEY` exists): `TOKENHUB_API_KEY`, optional `TOKENHUB_MODEL` (default `hy-vision-2.0-instruct`), optional `TOKENHUB_BASE_URL` (default `https://tokenhub.tencentmaas.com/v1/chat/completions`) and `TOKENHUB_TIMEOUT_MS`.
+- `tokenhub` (default when `TOKENHUB_API_KEY` exists): `TOKENHUB_API_KEY`, optional `TOKENHUB_MODEL` for whole-page mode (default `hy-vision-2.0-instruct`), optional `TOKENHUB_MODEL_SINGLE` for one cropped question-number band (default `hunyuan-t1-vision-20250916`), optional `TOKENHUB_BASE_URL` (default `https://tokenhub.tencentmaas.com/v1/chat/completions`) and `TOKENHUB_TIMEOUT_MS`.
 - `hunyuan` (legacy platform, retired upstream on 2026-09-30): `HUNYUAN_SECRET_ID`, `HUNYUAN_SECRET_KEY`, optional `HUNYUAN_REGION` / `HUNYUAN_MODEL`.
 - `mock` for offline UI work.
-
 Requests may override the model per call (`{"model":"deepseek/deepseek-flash"}`) so the same function can compare HY-Vision, DeepSeek, and Hunyuan T1 on identical prompts. Function environment variables are per function, so each function must be configured separately.
 
 ## Family initialization function
@@ -90,11 +88,24 @@ tcb logs search --query 'function_name:"<function>"' -e <envId>
 | --- | --- |
 | `question-ocr` | `OCR_TENCENT_SECRET_ID` `OCR_TENCENT_SECRET_KEY` `OCR_TENCENT_REGION` |
 | `question-split` | `OCR_TENCENT_SECRET_ID` `OCR_TENCENT_SECRET_KEY` `OCR_TENCENT_REGION`（需 `ocr:QuestionSplitOCR` 权限） |
-| `paper-marks` | `TOKENHUB_API_KEY` `TOKENHUB_MODEL`（可选 `MARK_PROVIDER`） |
-| `paper-scan` | 需要 sharp 原生库，当前运行时无法加载，**暂不可用** |
+| `paper-marks` | `TOKENHUB_API_KEY`，可选 `TOKENHUB_MODEL`（整页模式，默认 `hy-vision-2.0-instruct`）、`TOKENHUB_MODEL_SINGLE`（单题模式，默认 `hunyuan-t1-vision-20250916`）、`MARK_PROVIDER` |
+| `paper-scan` | 需要 sharp 原生库，当前运行时无法加载，**云端已删除，代码仅留库备查** |
 
 超时：`question-ocr` / `question-split` / `paper-marks` 均为 60 秒；默认 3 秒会导致真实照片调用失败。
 
 ### 已知限制
 - `sharp` 在本环境云函数中加载即崩溃（`0 code exit unexpected`），因此服务端裁剪方案改为小程序端 canvas 裁剪。
-- TokenHub 的 `hunyuan-t1-vision` 单页耗时 4~16 秒，超过小程序 15 秒调用窗口，长耗时模型需异步化后再启用。
+- TokenHub 的 `hunyuan-t1-vision` 单页耗时 4~16 秒，超过小程序 15 秒调用窗口；它只在**单题模式**（一块放大后的题号带，约 5 秒）里使用，整页模式仍用较快的 `hy-vision`。
+
+## 整页拍照识别链路（小程序端）
+
+`pages/import` 的流程：
+
+1. `wx.chooseMedia({ sizeType: ['original'] })` 拍整页；宽度超过 1600px 时先用 `wx.compressImage` 压到 1600，保证 < 6MB 且降低图片 token。
+2. 调 `question-split`（腾讯 `QuestionSplitOCR`）拿题目坐标，`process-import/tencent-question-split.js` 把坐标归一化成相对 rect。
+3. `services/page-scan.js` 用 `services/marks.js` 的 `computeQuestionBand` 生成「题号带」裁剪参数：题号上方一条 90~170px 的横带，放大 2.5 倍，输出上限 900×400。
+4. `services/canvas-crop.js` 用页面内 `<canvas type="2d">` 逐题裁剪并导出 jpg，串行发给 `paper-marks`（`mode: 'single'`，默认模型 `hunyuan-t1-vision-20250916`）。
+5. 预览页列出每题「题号 + 标记」，点标记可循环切换 `√ → ☆ → △ → 无`；**只有带标记且被勾选的行会保存**，未标记题不识别也不入库。
+6. 保存写入 `services/questions.js`（`origin: 'capture'` → 「整理」菜单，`labels` 取标记类型，`pageRect` 留坐标）。
+
+`page-scan.js` 是纯逻辑（无 `wx` 依赖），由 `tests/page-scan.test.js` 覆盖。切题服务按版面分组，若整页被并成 1 道高矩形（`h ≥ 0.25`），预览页会提示「可能漏掉其他题号」。
