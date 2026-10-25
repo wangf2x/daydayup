@@ -94,6 +94,9 @@ CloudBase 控制台已显示目标小程序授权成功。小程序当前使用 
 
 安全事件：调试期间读取函数配置页时，控制台把 `OCR_TENCENT_SECRET_ID` / `OCR_TENCENT_SECRET_KEY` 明文渲染进会话记录，需按已泄露处理——到 CAM 禁用并重建该子用户密钥，再更新函数环境变量。另需在删除临时函数时一并删除 `daydayup_validation_object_select_temp_ocr` 策略与 `ocr-smoke-test/` 下的两张裁剪图。
 
+2026-10-25 清理临时验证资产：确认产品链路只调用 `question-ocr`（`pages/import` 单题识别），`ocr-smoke-test` 独立成目录、与 `question-ocr` 无共享代码，删除云函数及源码、单测对业务链路无影响。已删除云端 `paper-scan`（sharp 在 CloudBase 运行时崩溃）与 `ocr-smoke-test` 两个函数，并移除仓库内 `cloudfunctions/ocr-smoke-test`、`tests/ocr-smoke-test.test.js`（可在 Git 历史中找回）。仍待清理：`daydayup_validation_object_select_temp_ocr` 策略、`ocr-smoke-test/` 下两张裁剪图、已泄露的 OCR 密钥轮换。
+
+
 2026-10-25 完成第一版产品化纵向流程（版面 + 功能）：新增 `pages/home` 错题本首页（孩子切换、本周统计、题目卡片、空态引导、悬浮拍照按钮）、重构 `pages/import` 为「拍照/选图 → 识别题干 → 核对修改（题干/科目/孩子）→ 保存」、新增 `pages/question` 详情页（编辑、切换掌握状态、删除）。新增产品级云函数 `question-ocr`：要求已登录且非匿名，必须显式确认图片为单题，限制 3 MB，返回题干与用量。数据层用 `miniprogram/services/questions.js`、`profile.js` 作为 repository 边界，当前落本机存储（`daydayup.questions.v1`、`daydayup.profile.v1`），后续替换为 PostgreSQL 不影响页面。已在模拟器实测通过：手动录入→列表→详情→标记掌握→编辑→删除；OCR 路径因新函数尚未配置 `OCR_TENCENT_*` 环境变量而返回 `OCR_PROVIDER_NOT_CONFIGURED`（每个云函数的环境变量相互独立），需补配后再验。新增单测覆盖 `question-ocr` 与本地 repository（39 项全通过）。函数尚未部署，环境中未配置任何 OCR 密钥或图像摘要；尚无真实 API 调用。
 
 ### 4.2 数据权限与隔离
