@@ -34,7 +34,7 @@ test('band output is clamped so one band cannot blow up the image tokens', () =>
   const wide = { left: 0, top: 0, width: 1200, height: 400, scale: 2.5, outputWidth: 3000, outputHeight: 1000 };
   const clamped = pageScan.clampBandOutput(wide);
   assert.equal(clamped.outputWidth, pageScan.MAX_BAND_OUTPUT_WIDTH);
-  assert.equal(clamped.outputHeight, 300);
+  assert.equal(clamped.outputHeight, 240);
   assert.equal(clamped.left, 0);
 
   const small = { left: 5, top: 5, width: 100, height: 40, scale: 2.5, outputWidth: 250, outputHeight: 100 };

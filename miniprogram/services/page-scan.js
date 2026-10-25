@@ -1,8 +1,8 @@
 const marks = require('./marks');
 
 const MAX_QUESTIONS_PER_PAGE = 12;
-const MAX_BAND_OUTPUT_WIDTH = 900;
-const MAX_BAND_OUTPUT_HEIGHT = 400;
+const MAX_BAND_OUTPUT_WIDTH = 720;
+const MAX_BAND_OUTPUT_HEIGHT = 300;
 const COARSE_GROUP_HEIGHT = 0.25;
 
 const MARK_CYCLE = ['none', 'check', 'star', 'triangle'];
@@ -46,7 +46,7 @@ function dominantSubject(questions) {
   return best;
 }
 
-// 裁剪输出限制在 900x400 内：题号带放大到 2.5 倍已足够看清勾/星/圈，再大只会多花图片 token。
+// 裁剪输出限制在 720x300 内：题号带放大 2.5 倍已够看清符号，再大只会更慢——单题视觉判断必须留在小程序 15 秒调用窗口内。
 function clampBandOutput(band) {
   if (!band || !band.outputWidth || !band.outputHeight) {
     return band;

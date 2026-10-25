@@ -10,6 +10,32 @@ const MAX_PAGE_WIDTH = 1600;
 const HINT_CAPTURE = '拍一整页作业，尽量把题号拍全、画面平整。只识别题号上的手写标记（√／☆／△／○），未标记的题不入库。';
 const HINT_PREVIEW = '核对每题标记：点标记可切换（√→☆→△→无），只有勾选的行会保存。';
 
+// 单题模式默认用较准的 t1，但它偶尔会超过小程序 15 秒窗口；一次超时就换快的 hy-vision 兜底，避免同一题反复等 15 秒。
+const FALLBACK_MODEL = 'hy-vision-2.0-instruct';
+
+function requestBandMark(imageBase64, questionNo, model) {
+  const payload = {
+    confirmedFullPage: true,
+    mode: 'single',
+    questionNo,
+    mimeType: 'image/jpeg',
+    imageBase64,
+  };
+  if (model) {
+    payload.model = model;
+  }
+  return callCloudFunction('paper-marks', payload);
+}
+
+async function requestBandMarkWithFallback(imageBase64, questionNo) {
+  try {
+    return await requestBandMark(imageBase64, questionNo);
+  } catch (firstError) {
+    console.warn('[import] mark fallback model', questionNo, describeError(firstError));
+    return requestBandMark(imageBase64, questionNo, FALLBACK_MODEL);
+  }
+}
+
 function compressPage(photo) {
   if (photo.width <= MAX_PAGE_WIDTH) {
     return Promise.resolve(photo);
@@ -172,13 +198,7 @@ Page({
         try {
           const crop = await cropper({ src: photo.tempFilePath, band: item.band });
           const bandBase64 = await readFileAsBase64(crop.tempFilePath);
-          const markResult = await callCloudFunction('paper-marks', {
-            confirmedFullPage: true,
-            mode: 'single',
-            questionNo: item.questionNo,
-            mimeType: 'image/jpeg',
-            imageBase64: bandBase64,
-          });
+          const markResult = await requestBandMarkWithFallback(bandBase64, item.questionNo);
           results.push({
             index: item.index,
             mark: markResult && markResult.mark,

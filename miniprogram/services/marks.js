@@ -84,15 +84,23 @@ function mergeQuestionMarks(entries) {
   return Array.from(byQuestion.values());
 }
 
+const ATTACHED_NUMBER = /^(附加题)\s*(\d{1,3})/;
+const NUMBERED_ITEM = /^(\d{1,3})\s*[.、．)）]/;
+
+// 只认「题号 + 分隔符」的形式。"80÷5=16" 这种算式开头不是题号，落到按顺序编号。
 function buildQuestionNoList(questions) {
   return (Array.isArray(questions) ? questions : []).map((question, index) => {
     const stem = String(question && question.stem ? question.stem : '').trim();
-    const match = stem.match(/^(附加题)?\s*(\d{1,3})/);
-    if (match) {
-      return match[1] ? `附加题${match[2]}` : match[2];
+    const attached = stem.match(ATTACHED_NUMBER);
+    if (attached) {
+      return `附加题${attached[2]}`;
     }
     if (/^附加题/.test(stem)) {
       return '附加题';
+    }
+    const numbered = stem.match(NUMBERED_ITEM);
+    if (numbered) {
+      return numbered[1];
     }
     return String(index + 1);
   });

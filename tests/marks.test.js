@@ -57,3 +57,16 @@ test('question numbers come from the stems and fall back to the index', () => {
   ]);
   assert.deepEqual(list, ['1', '2', '3', '附加题']);
 });
+
+test('arithmetic and handwriting lines are not mistaken for question numbers', () => {
+  const list = marks.buildQuestionNoList([
+    { stem: '4.某市计划扩建一个长方形绿化带' },
+    { stem: '80÷5=16（米）' },
+    { stem: '32\n\\times 32 \\times 3' },
+    { stem: '5、从一张长方形塑料板上' },
+    { stem: '附加题2：想一想' },
+    { stem: '(3) 求阴影部分面积' },
+  ]);
+  // 「80÷」「32×」没有题号分隔符，按顺序编号，不会变成第 80 题 / 第 32 题。
+  assert.deepEqual(list, ['4', '2', '3', '5', '附加题2', '6']);
+});
