@@ -1,0 +1,134 @@
+.page {
+  min-height: 100vh;
+  padding: 28rpx 28rpx 80rpx;
+  box-sizing: border-box;
+  background: #f5f7fb;
+  color: #1f2430;
+}
+
+.head {
+  padding: 28rpx 30rpx;
+  border-radius: 24rpx;
+  background: #fff;
+  box-shadow: 0 10rpx 26rpx rgba(31, 36, 48, 0.06);
+}
+
+.head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tag {
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.head-status {
+  font-size: 23rpx;
+  color: #f59e0b;
+}
+
+.head-status--done {
+  color: #16a34a;
+}
+
+.head-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 16rpx;
+  font-size: 23rpx;
+  color: #8b95a6;
+}
+
+.dot {
+  margin: 0 10rpx;
+}
+
+.block {
+  margin-top: 24rpx;
+  padding: 28rpx 30rpx;
+  border-radius: 24rpx;
+  background: #fff;
+  box-shadow: 0 10rpx 26rpx rgba(31, 36, 48, 0.06);
+}
+
+.block-title {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #58637a;
+}
+
+.block-title--sub {
+  margin-top: 26rpx;
+}
+
+.stem {
+  margin-top: 18rpx;
+  font-size: 30rpx;
+  line-height: 1.7;
+  color: #22293a;
+  white-space: pre-wrap;
+}
+
+.warn {
+  margin-top: 20rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 14rpx;
+  background: #fff7e6;
+  color: #b06a00;
+  font-size: 23rpx;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 200rpx;
+  margin-top: 18rpx;
+  font-size: 29rpx;
+  line-height: 1.7;
+  color: #22293a;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+}
+
+.chip {
+  margin: 0 16rpx 12rpx 0;
+  padding: 12rpx 30rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid #dfe6f4;
+  background: #f7f9ff;
+  font-size: 25rpx;
+  color: #58637a;
+}
+
+.chip--active {
+  color: #fff;
+  font-weight: 600;
+}
+
+.actions {
+  margin-top: 34rpx;
+}
+
+.btn {
+  margin-bottom: 18rpx;
+  border-radius: 18rpx;
+}
+
+.btn--ghost {
+  background: #fff;
+  color: #3b7cff;
+  border: 1rpx solid #d6e2ff;
+}
+
+.btn--danger {
+  background: #fff;
+  color: #e5484d;
+  border: 1rpx solid #ffd5d7;
+}

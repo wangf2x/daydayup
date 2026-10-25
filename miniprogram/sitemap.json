@@ -1,0 +1,9 @@
+{
+  "desc": "Family-only learning experience",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

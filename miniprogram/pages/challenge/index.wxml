@@ -1,0 +1,96 @@
+<view class="page">
+  <view class="empty" wx:if="{{phase === 'empty'}}">
+    <view class="empty-emoji">🎯</view>
+    <view class="empty-title">题库里没有可用题目</view>
+    <button type="primary" class="empty-btn" bindtap="onExit">返回</button>
+  </view>
+
+  <block wx:if="{{phase === 'running'}}">
+    <view class="progress-row">
+      <text class="progress-text">{{contestTitle}} · 第 {{index + 1}} / {{total}} 题</text>
+      <text class="score">✔ {{correct}} · ✘ {{wrong}}{{skipped > 0 ? ' · 跳过 ' + skipped : ''}}</text>
+    </view>
+    <view class="progress">
+      <view class="progress-bar" style="width: {{(index / total) * 100}}%"></view>
+    </view>
+    <view class="fallback" wx:if="{{fallbackNote}}">{{fallbackNote}}</view>
+
+    <view class="card">
+      <view class="card-meta">
+        <text class="badge">{{current.type === 'choice' ? '单选题' : current.type === 'judge' ? '判断题' : '填空题'}}</text>
+        <text class="grade">{{current.grade}} 年级 · 难度{{difficultyLabel}}</text>
+      </view>
+      <view class="card-stem">{{current.stem}}</view>
+
+      <view class="options" wx:if="{{current.type !== 'fill'}}">
+        <view
+          wx:for="{{current.options}}"
+          wx:key="*this"
+          class="option
+            {{answered && item === current.answer ? 'option--right' : ''}}
+            {{answered && item !== current.answer && item === selectedAnswer ? 'option--wrong' : ''}}"
+          data-option="{{item}}"
+          bindtap="onOptionTap"
+        >{{item}}</view>
+      </view>
+
+      <view class="fill" wx:else>
+        <input
+          class="fill-input"
+          value="{{inputValue}}"
+          placeholder="在这里输入答案"
+          disabled="{{answered}}"
+          confirm-type="done"
+          bindinput="onInput"
+          bindconfirm="onSubmitFill"
+        />
+        <button class="fill-btn" wx:if="{{!answered}}" bindtap="onSubmitFill">提交</button>
+      </view>
+    </view>
+
+    <view class="feedback {{lastCorrect ? 'feedback--right' : 'feedback--wrong'}}" wx:if="{{answered}}">
+      <view class="feedback-title">{{lastCorrect ? '答对了 🎉' : '答错了'}}</view>
+      <view class="feedback-answer">正确答案：{{current.answer}}</view>
+      <view class="feedback-explain" wx:if="{{lastExplanation}}">{{lastExplanation}}</view>
+    </view>
+
+    <view class="nav-row" wx:if="{{allowSkip}}">
+      <button class="nav-btn" disabled="{{index === 0}}" bindtap="onPrev">上一题</button>
+      <button class="nav-btn nav-btn--skip" wx:if="{{!answered}}" bindtap="onSkip">跳过本题</button>
+      <button class="nav-btn nav-btn--primary" wx:else bindtap="onNext">{{index + 1 === total ? '看成绩' : '下一题'}}</button>
+    </view>
+
+    <block wx:else>
+      <button type="primary" class="btn" wx:if="{{answered}}" bindtap="onNext">
+        {{index + 1 === total ? '看成绩' : '下一题'}}
+      </button>
+      <button type="primary" class="btn" wx:if="{{!answered}}" disabled>请先作答</button>
+    </block>
+  </block>
+
+  <view class="result" wx:if="{{phase === 'finished'}}">
+    <view class="result-emoji">{{wrong === 0 && skipped === 0 ? '🏆' : '💪'}}</view>
+    <view class="result-title">{{wrong === 0 && skipped === 0 ? '全对！太棒了' : '挑战完成'}}</view>
+    <view class="result-text">{{summaryText}}</view>
+    <view class="result-stats">
+      <view class="result-stat">
+        <text class="result-value">{{correct}}</text>
+        <text class="result-label">答对</text>
+      </view>
+      <view class="result-stat">
+        <text class="result-value result-value--warn">{{wrong}}</text>
+        <text class="result-label">答错</text>
+      </view>
+      <view class="result-stat">
+        <text class="result-value result-value--skip">{{skipped}}</text>
+        <text class="result-label">未作答</text>
+      </view>
+      <view class="result-stat">
+        <text class="result-value result-value--best">{{best}}</text>
+        <text class="result-label">历史最高</text>
+      </view>
+    </view>
+    <button type="primary" class="btn" bindtap="onRestart">再来一局</button>
+    <button class="btn btn--ghost" bindtap="onExit">返回</button>
+  </view>
+</view>

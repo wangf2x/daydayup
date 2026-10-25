@@ -1,0 +1,12 @@
+{
+  "name": "daydayup-question-split",
+  "private": true,
+  "version": "0.1.0",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "tencentcloud-sdk-nodejs-ocr": "^4.1.331"
+  }
+}

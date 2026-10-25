@@ -1,0 +1,86 @@
+<view class="page">
+  <view class="hero" style="background: linear-gradient(140deg, {{subjectColor}} 0%, {{subjectColor}}cc 100%)">
+    <view class="hero-title">{{subjectName}}</view>
+    <view class="hero-meta">待复习 {{pending}} 道 · 已掌握 {{mastered}} 道 · 共 {{menuCounts.all || 0}} 道</view>
+  </view>
+
+  <scroll-view class="menu-bar" scroll-x enable-flex>
+    <view
+      wx:for="{{menus}}"
+      wx:key="id"
+      class="menu {{menu === item.id ? 'menu--active' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="onSwitchMenu"
+    >
+      {{item.label}}
+      <text class="menu-count">{{menuCounts[item.id] || 0}}</text>
+    </view>
+  </scroll-view>
+
+  <view class="filters" wx:if="{{menu !== 'challenge'}}">
+    <view class="filters-title">按原因筛选<text class="filters-sub">灰色=包含，白色=排除</text></view>
+    <view class="chips">
+      <view
+        wx:for="{{labelChips}}"
+        wx:key="id"
+        class="chip {{item.excluded ? 'chip--off' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onToggleLabel"
+      >
+        <text class="chip-symbol">{{item.symbol}}</text>
+        <text class="chip-text">{{item.label}}</text>
+      </view>
+      <view class="chip chip--reset" wx:if="{{excludedLabels.length > 0}}" bindtap="onResetFilters">重置</view>
+    </view>
+  </view>
+
+  <block wx:if="{{menu !== 'challenge'}}">
+    <view class="empty" wx:if="{{questions.length === 0}}">
+      <view class="empty-emoji">📝</view>
+      <view class="empty-title">{{emptyText}}</view>
+      <view class="empty-text">拍照整页带标记（√ / ☆ / △）的{{subjectName}}作业，识别后自动归到这里。</view>
+      <button type="primary" class="empty-btn" bindtap="goCapture">拍照录题</button>
+    </view>
+
+    <view class="card-list">
+      <view
+        wx:for="{{questions}}"
+        wx:key="id"
+        class="card {{item.status === 'mastered' ? 'card--done' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onOpenQuestion"
+      >
+        <view class="card-head">
+          <view class="marks">
+            <text wx:for="{{item.labelChips}}" wx:for-item="mark" wx:key="id" class="mark">{{mark.symbol}}</text>
+            <text class="status {{item.status === 'mastered' ? 'status--done' : ''}}">{{item.statusLabel}}</text>
+          </view>
+          <text class="card-date">{{item.dateText}}</text>
+        </view>
+        <view class="card-stem">{{item.preview}}</view>
+        <view class="card-meta" wx:if="{{item.knowledgePoints.length > 0}}">
+          <text class="kp" wx:for="{{item.knowledgePoints}}" wx:for-item="point" wx:key="*this">{{point}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="bottom-bar" wx:if="{{questions.length > 0}}">
+      <button class="bar-btn" bindtap="startChallenge">开始挑战赛</button>
+      <button class="bar-btn bar-btn--primary" bindtap="goCapture">继续拍照</button>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="challenge-card">
+      <view class="challenge-emoji">🏆</view>
+      <view class="challenge-title">{{contestTitle}}</view>
+      <view class="challenge-desc">
+        题库共 {{bankSize}} 题，每局随机抽 {{contestSize}} 题，答完立即判分并给出正确答案。
+      </view>
+      <view class="challenge-meta" wx:if="{{contestPlays > 0}}">历史最高 {{contestBest}} 分 · 已挑战 {{contestPlays}} 次</view>
+      <view class="challenge-meta" wx:else>还没挑战过，来试试水平吧</view>
+      <button type="primary" class="challenge-btn" bindtap="startChallenge">开始{{contestTitle}}</button>
+      <view class="challenge-link">想练混合题？去首页参加大综合赛</view>
+    </view>
+  </block>
+</view>

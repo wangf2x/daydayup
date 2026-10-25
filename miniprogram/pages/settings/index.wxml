@@ -1,0 +1,54 @@
+<view class="page">
+  <view class="card">
+    <view class="row">
+      <view class="row-body">
+        <view class="row-title">允许跳过题目</view>
+        <view class="row-desc">开启后答题时可跳过当前题、也能返回上一题；跳过的题计为未作答。</view>
+      </view>
+      <switch checked="{{allowSkip}}" color="#3b6bff" bindchange="onToggleSkip" />
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="row-title">难易程度<text wx:if="{{!difficultyEnabled}}" class="tag-soon">暂未启用</text></view>
+    <view class="row-desc">当前：{{difficultyEnabled ? difficultyLevels[difficultyIndex].label : '不筛选（全难度随机）'}}<block wx:if="{{difficultyEnabled}}">（{{difficultyHint}}）</block></view>
+    <slider
+      min="0"
+      max="2"
+      step="1"
+      value="{{difficultyIndex}}"
+      disabled="{{!difficultyEnabled}}"
+      show-value="{{false}}"
+      activeColor="#3b6bff"
+      block-size="24"
+      bindchange="onDifficultyChange"
+      bindchanging="onDifficultyChange"
+    />
+    <view class="scale">
+      <text wx:for="{{difficultyLevels}}" wx:key="id" class="scale-item {{difficultyEnabled && index === difficultyIndex ? 'scale-item--active' : ''}}">{{item.label}}</text>
+    </view>
+    <view class="hint">按难度筛选抽题；若该难度题目不足，会自动补足其它难度。该功能暂未启用，题目按全难度随机抽取。</view>
+  </view>
+
+  <view class="card">
+    <view class="row-title">题量</view>
+    <view class="row-desc">每局 {{questionCount}} 题</view>
+    <slider
+      min="0"
+      max="3"
+      step="1"
+      value="{{countIndex}}"
+      show-value="{{false}}"
+      activeColor="#3b6bff"
+      block-size="24"
+      bindchange="onCountChange"
+      bindchanging="onCountChange"
+    />
+    <view class="scale">
+      <text wx:for="{{countOptions}}" wx:key="*this" class="scale-item {{index === countIndex ? 'scale-item--active' : ''}}">{{item}}</text>
+    </view>
+  </view>
+
+  <button type="primary" class="btn" bindtap="onSave">保存设置</button>
+  <button class="btn btn--ghost" bindtap="onReset">恢复默认</button>
+</view>

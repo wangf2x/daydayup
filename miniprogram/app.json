@@ -1,0 +1,20 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/library/index",
+    "pages/subject/index",
+    "pages/contest/index",
+    "pages/settings/index",
+    "pages/challenge/index",
+    "pages/import/index",
+    "pages/question/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "Daydayup",
+    "navigationBarBackgroundColor": "#f5f7fb",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f7fb"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

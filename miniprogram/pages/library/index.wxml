@@ -1,0 +1,39 @@
+<view class="page">
+  <view class="head">
+    <view class="head-title">知识库</view>
+    <view class="head-sub">{{learnerName}} 的错题已按科目整理 · 共 {{total}} 道</view>
+  </view>
+
+  <view class="grid">
+    <view
+      wx:for="{{subjects}}"
+      wx:key="id"
+      class="subject-card"
+      data-id="{{item.id}}"
+      bindtap="onOpenSubject"
+    >
+      <view class="subject-top">
+        <view class="subject-badge" style="background: {{item.color}}1a; color: {{item.color}}">
+          {{item.label}}
+        </view>
+        <text class="subject-count">{{item.total}}</text>
+      </view>
+      <view class="subject-name">{{item.label}}错题集</view>
+      <view class="subject-meta">待复习 {{item.pending}} · 已掌握 {{item.mastered}}</view>
+      <view class="progress">
+        <view class="progress-bar" style="width: {{item.percent}}%; background: {{item.color}}"></view>
+      </view>
+      <view class="subject-foot">
+        <text class="subject-percent">{{item.percent}}% 已掌握</text>
+        <text class="subject-go">查看 ›</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{total === 0}}">
+    <view class="empty-emoji">🗂️</view>
+    <view class="empty-title">知识库还是空的</view>
+    <view class="empty-text">先拍一张带标记的题目，识别后会自动归类到对应科目。</view>
+    <button type="primary" class="empty-btn" bindtap="goCapture">拍照录题</button>
+  </view>
+</view>

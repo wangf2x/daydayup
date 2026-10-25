@@ -1,0 +1,287 @@
+.page {
+  min-height: 100vh;
+  padding: 32rpx 30rpx 60rpx;
+  box-sizing: border-box;
+  background: #f2f5fa;
+  color: #1d2330;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 22rpx;
+  color: #7b8798;
+}
+
+.score {
+  color: #24406e;
+  font-weight: 600;
+}
+
+.progress {
+  margin-top: 14rpx;
+  height: 10rpx;
+  border-radius: 999rpx;
+  background: #e4eaf4;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, #4d7cff, #7aa5ff);
+}
+
+.fallback {
+  margin-top: 14rpx;
+  padding: 12rpx 18rpx;
+  border-radius: 14rpx;
+  background: #fff7e6;
+  color: #b06a00;
+  font-size: 21rpx;
+}
+
+.card {
+  margin-top: 22rpx;
+  padding: 32rpx 28rpx;
+  border-radius: 28rpx;
+  background: #fff;
+  box-shadow: 0 12rpx 28rpx rgba(29, 35, 48, 0.08);
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge {
+  padding: 5rpx 16rpx;
+  border-radius: 999rpx;
+  background: #eef3ff;
+  color: #3b6bff;
+  font-size: 21rpx;
+}
+
+.grade {
+  font-size: 21rpx;
+  color: #a4afc0;
+}
+
+.card-stem {
+  margin-top: 18rpx;
+  font-size: 31rpx;
+  line-height: 1.72;
+  color: #1f2735;
+  white-space: pre-wrap;
+}
+
+.options {
+  margin-top: 24rpx;
+}
+
+.option {
+  margin-bottom: 16rpx;
+  padding: 22rpx 24rpx;
+  border-radius: 18rpx;
+  border: 1rpx solid #e2e8f4;
+  background: #f8faff;
+  font-size: 28rpx;
+  color: #2a3142;
+}
+
+.option--right {
+  border-color: #17804a;
+  background: #eaf7ef;
+  color: #17804a;
+  font-weight: 600;
+}
+
+.option--wrong {
+  border-color: #d64545;
+  background: #fff2f2;
+  color: #d64545;
+  font-weight: 600;
+}
+
+.fill {
+  display: flex;
+  align-items: center;
+  margin-top: 24rpx;
+}
+
+.fill-input {
+  flex: 1;
+  height: 84rpx;
+  padding: 0 22rpx;
+  border-radius: 18rpx;
+  border: 1rpx solid #e2e8f4;
+  background: #f8faff;
+  font-size: 28rpx;
+}
+
+.fill-btn {
+  margin-left: 16rpx;
+  padding: 0 34rpx;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 18rpx;
+  background: #24406e;
+  color: #fff;
+  font-size: 26rpx;
+}
+
+.feedback {
+  margin-top: 22rpx;
+  padding: 24rpx 26rpx;
+  border-radius: 22rpx;
+}
+
+.feedback--right {
+  background: #eaf7ef;
+}
+
+.feedback--wrong {
+  background: #fff2f2;
+}
+
+.feedback-title {
+  font-size: 27rpx;
+  font-weight: 700;
+  color: #1f2735;
+}
+
+.feedback-answer {
+  margin-top: 10rpx;
+  font-size: 25rpx;
+  color: #2a3142;
+}
+
+.feedback-explain {
+  margin-top: 10rpx;
+  font-size: 23rpx;
+  line-height: 1.6;
+  color: #6f7a8c;
+}
+
+.nav-row {
+  display: flex;
+  margin-top: 24rpx;
+}
+
+.nav-btn {
+  flex: 1;
+  margin: 0 8rpx;
+  border-radius: 18rpx;
+  font-size: 26rpx;
+  background: #fff;
+  color: #24406e;
+  border: 1rpx solid #dbe3f0;
+}
+
+.nav-btn--skip {
+  background: #f4f7fd;
+  color: #5a6779;
+}
+
+.nav-btn--primary {
+  background: #24406e;
+  color: #fff;
+  border-color: #24406e;
+}
+
+.btn {
+  margin-top: 26rpx;
+  border-radius: 18rpx;
+}
+
+.btn--ghost {
+  background: #fff;
+  color: #24406e;
+  border: 1rpx solid #dbe3f0;
+}
+
+.empty {
+  margin-top: 80rpx;
+  padding: 56rpx 40rpx;
+  border-radius: 26rpx;
+  background: #fff;
+  text-align: center;
+}
+
+.empty-emoji {
+  font-size: 66rpx;
+}
+
+.empty-title {
+  margin-top: 16rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.empty-btn {
+  margin-top: 28rpx;
+  border-radius: 18rpx;
+}
+
+.result {
+  margin-top: 50rpx;
+  padding: 50rpx 26rpx;
+  border-radius: 28rpx;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 12rpx 28rpx rgba(29, 35, 48, 0.08);
+}
+
+.result-emoji {
+  font-size: 84rpx;
+}
+
+.result-title {
+  margin-top: 14rpx;
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #24406e;
+}
+
+.result-text {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #7b8798;
+}
+
+.result-stats {
+  display: flex;
+  margin-top: 30rpx;
+}
+
+.result-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.result-value {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #17804a;
+}
+
+.result-value--warn {
+  color: #d64545;
+}
+
+.result-value--skip {
+  color: #99a4b6;
+}
+
+.result-value--best {
+  color: #3b6bff;
+}
+
+.result-label {
+  margin-top: 6rpx;
+  font-size: 21rpx;
+  color: #99a4b6;
+}

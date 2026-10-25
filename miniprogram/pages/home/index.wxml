@@ -1,0 +1,64 @@
+<view class="page">
+  <view class="topbar">
+    <view class="brand">
+      <text class="brand-name">Daydayup</text>
+      <text class="brand-sub">每天进步一点点</text>
+    </view>
+    <view class="avatar" wx:if="{{ready}}">{{activeLearnerName[0]}}</view>
+  </view>
+
+  <view class="learner-strip" wx:if="{{ready}}">
+    <view
+      wx:for="{{learners}}"
+      wx:key="id"
+      class="chip {{item.id === activeLearnerId ? 'chip--active' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="onSwitchLearner"
+    >{{item.nickname}}</view>
+    <view class="chip chip--ghost" bindtap="onCreateLearner">＋</view>
+  </view>
+
+  <view class="welcome" wx:if="{{ready}}">
+    <view class="welcome-title">{{activeLearnerName}}，今天想做什么？</view>
+    <view class="welcome-meta">共 {{stats.total}} 道错题 · {{stats.pendingReview}} 道待复习</view>
+  </view>
+
+  <view class="welcome welcome--guest" wx:else>
+    <view class="welcome-title">先登录，开始记录</view>
+    <view class="welcome-meta">使用微信身份登录，题目只在家里可见</view>
+    <button type="primary" class="login-btn" bindtap="onSignIn">微信身份登录</button>
+  </view>
+
+  <view class="entry-grid" wx:if="{{ready}}">
+    <view class="entry entry--library" bindtap="goLibrary">
+      <view class="entry-icon">📚</view>
+      <view class="entry-body">
+        <view class="entry-title">知识库</view>
+        <view class="entry-desc">{{subjectCount}} 个科目 · {{stats.total}} 道错题</view>
+      </view>
+      <view class="entry-arrow">›</view>
+    </view>
+
+    <view class="entry entry--challenge" bindtap="goChallenge">
+      <view class="entry-icon">🏆</view>
+      <view class="entry-body">
+        <view class="entry-title">挑战赛</view>
+        <view class="entry-desc">随机抽 {{stats.pendingReview}} 道待复习题</view>
+      </view>
+      <view class="entry-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="capture-card" wx:if="{{ready}}" bindtap="goCapture">
+    <view class="capture-left">
+      <view class="capture-icon">📷</view>
+      <view>
+        <view class="capture-title">拍照 / 相册上传</view>
+        <view class="capture-desc">识别标记题，一键加入错题集</view>
+      </view>
+    </view>
+    <view class="capture-btn">去拍照</view>
+  </view>
+
+  <view class="tip">题目先保存在本机，接入家庭数据库后可多设备同步。</view>
+</view>

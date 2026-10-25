@@ -1,0 +1,51 @@
+<view class="page" wx:if="{{question}}">
+  <view class="head">
+    <view class="head-row">
+      <text class="tag" style="background: {{question.subjectColor}}14; color: {{question.subjectColor}}">{{question.subjectLabel}}</text>
+      <text class="head-status {{question.status === 'mastered' ? 'head-status--done' : ''}}">
+        {{question.status === 'mastered' ? '已掌握' : '待掌握'}}
+      </text>
+    </view>
+    <view class="head-meta">
+      <text>{{question.learnerName || '未指定孩子'}}</text>
+      <text class="dot">·</text>
+      <text>{{question.createdText}}</text>
+    </view>
+  </view>
+
+  <view class="block" wx:if="{{!editing}}">
+    <view class="block-title">题干</view>
+    <view class="stem">{{question.stem}}</view>
+    <view class="warn" wx:if="{{question.ocrComplete === false}}">这道题识别可能不完整，建议核对后再使用。</view>
+  </view>
+
+  <view class="block" wx:if="{{editing}}">
+    <view class="block-title">编辑题干</view>
+    <textarea class="textarea" value="{{draftStem}}" bindinput="onStemInput" auto-height maxlength="2000" />
+    <view class="block-title block-title--sub">科目</view>
+    <view class="chips">
+      <view
+        wx:for="{{subjects}}"
+        wx:key="id"
+        class="chip {{item.id === draftSubjectId ? 'chip--active' : ''}}"
+        style="{{item.id === draftSubjectId ? 'background:' + item.color + ';border-color:' + item.color : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onSubjectTap"
+      >{{item.label}}</view>
+    </view>
+  </view>
+
+  <view class="actions">
+    <block wx:if="{{!editing}}">
+      <button type="primary" class="btn" bindtap="onToggleMastered">
+        {{question.status === 'mastered' ? '标记为待复习' : '标记为已掌握'}}
+      </button>
+      <button class="btn btn--ghost" bindtap="onEdit">编辑题目</button>
+      <button class="btn btn--danger" bindtap="onDelete">删除</button>
+    </block>
+    <block wx:else>
+      <button type="primary" class="btn" bindtap="onSaveEdit">保存修改</button>
+      <button class="btn btn--ghost" bindtap="onCancelEdit">取消</button>
+    </block>
+  </view>
+</view>

@@ -1,0 +1,13 @@
+{
+  "name": "daydayup-paper-scan",
+  "private": true,
+  "version": "0.1.0",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "sharp": "^0.33.5",
+    "tencentcloud-sdk-nodejs-ocr": "^4.1.331"
+  }
+}

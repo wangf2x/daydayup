@@ -1,0 +1,149 @@
+.page {
+  min-height: 100vh;
+  padding: 28rpx 28rpx 80rpx;
+  box-sizing: border-box;
+  background: #f5f7fb;
+  color: #1f2430;
+}
+
+.hint {
+  margin: 0 6rpx 22rpx;
+  font-size: 25rpx;
+  line-height: 1.6;
+  color: #6f7a8c;
+}
+
+.shot {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26rpx;
+  background: #fff;
+  box-shadow: 0 10rpx 26rpx rgba(31, 36, 48, 0.06);
+}
+
+.shot-img {
+  width: 100%;
+  display: block;
+}
+
+.shot-retake {
+  position: absolute;
+  right: 20rpx;
+  bottom: 20rpx;
+  padding: 10rpx 22rpx;
+  border-radius: 999rpx;
+  background: rgba(23, 30, 44, 0.62);
+  color: #fff;
+  font-size: 22rpx;
+}
+
+.shot--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 90rpx 40rpx;
+  border: 2rpx dashed #c8d3e6;
+  box-shadow: none;
+}
+
+.shot-emoji {
+  font-size: 72rpx;
+}
+
+.shot-title {
+  margin-top: 18rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.shot-sub {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #8b95a6;
+  text-align: center;
+}
+
+.actions {
+  margin-top: 30rpx;
+}
+
+.btn {
+  margin-bottom: 20rpx;
+  border-radius: 18rpx;
+}
+
+.btn--ghost {
+  background: #fff;
+  color: #3b7cff;
+  border: 1rpx solid #d6e2ff;
+}
+
+.field {
+  margin-top: 28rpx;
+  padding: 26rpx 28rpx;
+  border-radius: 24rpx;
+  background: #fff;
+  box-shadow: 0 10rpx 26rpx rgba(31, 36, 48, 0.06);
+}
+
+.field-label {
+  margin-bottom: 16rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #58637a;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 160rpx;
+  font-size: 28rpx;
+  line-height: 1.62;
+  color: #2b3140;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.chip {
+  margin: 0 16rpx 12rpx 0;
+  padding: 12rpx 30rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid #dfe6f4;
+  background: #f7f9ff;
+  font-size: 25rpx;
+  color: #58637a;
+}
+
+.chip--active {
+  color: #fff;
+  font-weight: 600;
+}
+
+.picker-value {
+  padding: 18rpx 22rpx;
+  border-radius: 16rpx;
+  background: #f7f9ff;
+  font-size: 28rpx;
+  color: #2b3140;
+}
+
+.badge {
+  margin-top: 22rpx;
+  padding: 16rpx 22rpx;
+  border-radius: 16rpx;
+  background: #fff7e6;
+  color: #b06a00;
+  font-size: 24rpx;
+}
+
+.tip {
+  margin-top: 36rpx;
+  padding: 22rpx 24rpx;
+  border-radius: 18rpx;
+  background: #eef4ff;
+  color: #43547a;
+  font-size: 23rpx;
+  line-height: 1.6;
+}

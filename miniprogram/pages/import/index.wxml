@@ -1,0 +1,71 @@
+<view class="page">
+  <view class="hint">{{hint}}</view>
+
+  <view class="shot" wx:if="{{image}}" bindtap="onChooseImage">
+    <image class="shot-img" src="{{image.tempFilePath}}" mode="widthFix" />
+    <view class="shot-retake">重新选图</view>
+  </view>
+
+  <view class="shot shot--empty" wx:else bindtap="onChooseImage">
+    <view class="shot-emoji">📷</view>
+    <view class="shot-title">拍照或从相册选择</view>
+    <view class="shot-sub">只保留一道题，尽量不要拍到作答过程</view>
+  </view>
+
+  <view class="actions" wx:if="{{step === 'capture'}}">
+    <button
+      type="primary"
+      class="btn"
+      loading="{{busy}}"
+      disabled="{{busy || !image}}"
+      bindtap="onRecognize"
+    >识别题干</button>
+    <button class="btn btn--ghost" disabled="{{busy}}" bindtap="onManualInput">手动录入</button>
+  </view>
+
+  <block wx:if="{{step === 'confirm'}}">
+    <view class="field">
+      <view class="field-label">题干</view>
+      <textarea
+        class="textarea"
+        value="{{stem}}"
+        placeholder="请输入题目内容"
+        maxlength="2000"
+        bindinput="onStemInput"
+        auto-height
+      />
+    </view>
+
+    <view class="field">
+      <view class="field-label">科目</view>
+      <view class="chips">
+        <view
+          wx:for="{{subjects}}"
+          wx:key="id"
+          class="chip {{item.id === subjectId ? 'chip--active' : ''}}"
+          style="{{item.id === subjectId ? 'background:' + item.color + ';border-color:' + item.color : ''}}"
+          data-id="{{item.id}}"
+          bindtap="onSubjectTap"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="field-label">孩子</view>
+      <picker mode="selector" range="{{learners}}" range-key="nickname" value="{{learnerIndex}}" bindchange="onLearnerChange">
+        <view class="picker-value">{{learners[learnerIndex].nickname || '请选择孩子'}}</view>
+      </picker>
+    </view>
+
+    <view class="badge" wx:if="{{ocrComplete === false}}">识别可能不完整，请核对题干</view>
+
+    <view class="actions">
+      <button type="primary" class="btn" disabled="{{busy}}" bindtap="onSave">保存到错题本</button>
+      <button class="btn btn--ghost" disabled="{{busy}}" bindtap="onRetake">重新拍照</button>
+    </view>
+  </block>
+
+  <view class="tip">
+    <text>提示：题目会先保存在本机演示库中，后续接入家庭数据库后可多设备同步。</text>
+  </view>
+</view>

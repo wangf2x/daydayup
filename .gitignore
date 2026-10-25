@@ -1,0 +1,14 @@
+node_modules/
+miniprogram_npm/
+.env
+.env.*
+!.env.example
+miniprogram/config.local.js
+cloudbaserc.local.json
+*.log
+coverage/
+
+# 本地安装包/临时产物
+*.exe
+artifacts/
+*.tsbuildinfo

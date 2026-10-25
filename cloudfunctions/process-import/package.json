@@ -1,0 +1,10 @@
+{
+  "name": "daydayup-process-import",
+  "private": true,
+  "version": "0.1.0",
+  "main": "index.js",
+  "dependencies": {
+    "tencentcloud-sdk-nodejs-ocr": "^4.1.331",
+    "wx-server-sdk": "^3.0.1"
+  }
+}

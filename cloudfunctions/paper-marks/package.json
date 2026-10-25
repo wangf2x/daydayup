@@ -1,0 +1,12 @@
+{
+  "name": "daydayup-paper-marks",
+  "private": true,
+  "version": "0.1.0",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "tencentcloud-sdk-nodejs-hunyuan": "^4.1.0"
+  }
+}
