@@ -10,12 +10,20 @@ test('question band covers the number line at the top of a question', () => {
   assert.deepEqual(band, {
     left: 28,
     top: 205,
-    width: 356,
-    height: 170,
+    width: 215,
+    height: 140,
     scale: 2.5,
-    outputWidth: 890,
-    outputHeight: 425,
+    outputWidth: 538,
+    outputHeight: 350,
   });
+});
+
+test('the band never stretches across the whole question, so handwriting is excluded', () => {
+  const wide = marks.computeQuestionBand({ x: 0.05, y: 0.2, w: 0.9, h: 0.2 }, page);
+  const pageWidth = 768;
+  assert.ok(wide.width <= Math.round(marks.BAND_MAX_WIDTH_RATIO * pageWidth) + 1);
+  assert.equal(wide.left, Math.round(0.05 * pageWidth) - marks.BAND_PADDING_X);
+  assert.ok(wide.height <= marks.BAND_MAX_HEIGHT);
 });
 
 test('question band keeps a minimum height and clamps to the page edge', () => {

@@ -5,10 +5,12 @@ const MARK_LABELS = {
 };
 
 const BAND_MIN_HEIGHT = 90;
-const BAND_MAX_HEIGHT = 170;
+const BAND_MAX_HEIGHT = 140;
 const BAND_UPSCALE = 2.5;
 const BAND_PADDING_X = 8;
 const BAND_PADDING_Y = 6;
+// 题号在题目左边，只裁左侧窄条：带太宽会把孩子的解题笔迹一起送进模型，造成误报。
+const BAND_MAX_WIDTH_RATIO = 0.28;
 
 // 题号通常位于题目区域左上角，只裁「题号带」再放大，模型才能分辨勾/星/圈。
 function computeQuestionBand(rect, page) {
@@ -27,7 +29,9 @@ function computeQuestionBand(rect, page) {
 
   const left = Math.max(0, Math.round(x * pageWidth) - BAND_PADDING_X);
   const top = Math.max(0, Math.round(y * pageHeight) - BAND_PADDING_Y);
-  const right = Math.min(pageWidth, Math.round((x + w) * pageWidth) + BAND_PADDING_X);
+  const rectRight = Math.round((x + w) * pageWidth) + BAND_PADDING_X;
+  const cappedRight = left + Math.round(BAND_MAX_WIDTH_RATIO * pageWidth);
+  const right = Math.min(pageWidth, rectRight, cappedRight);
   const vertical = Math.round(h * pageHeight);
   const height = Math.min(pageHeight - top, Math.max(BAND_MIN_HEIGHT, Math.min(vertical, BAND_MAX_HEIGHT)));
   const width = right - left;
@@ -111,6 +115,9 @@ module.exports = {
   BAND_MIN_HEIGHT,
   BAND_MAX_HEIGHT,
   BAND_UPSCALE,
+  BAND_PADDING_X,
+  BAND_PADDING_Y,
+  BAND_MAX_WIDTH_RATIO,
   computeQuestionBand,
   normalizeMark,
   mergeQuestionMarks,

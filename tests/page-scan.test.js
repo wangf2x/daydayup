@@ -34,7 +34,7 @@ test('band output is clamped so one band cannot blow up the image tokens', () =>
   const wide = { left: 0, top: 0, width: 1200, height: 400, scale: 2.5, outputWidth: 3000, outputHeight: 1000 };
   const clamped = pageScan.clampBandOutput(wide);
   assert.equal(clamped.outputWidth, pageScan.MAX_BAND_OUTPUT_WIDTH);
-  assert.equal(clamped.outputHeight, 240);
+  assert.equal(clamped.outputHeight, 200);
   assert.equal(clamped.left, 0);
 
   const small = { left: 5, top: 5, width: 100, height: 40, scale: 2.5, outputWidth: 250, outputHeight: 100 };
@@ -58,8 +58,8 @@ test('crop plan derives question numbers from stems and keeps the band rect', ()
   const band = plan.items[0].band;
   assert.equal(band.left, 72);
   assert.equal(band.top, 207);
-  assert.equal(band.width, 816);
-  assert.equal(band.height, 170);
+  assert.equal(band.width, 448);
+  assert.equal(band.height, 140);
   assert.ok(band.outputWidth <= pageScan.MAX_BAND_OUTPUT_WIDTH);
   assert.ok(band.outputHeight <= pageScan.MAX_BAND_OUTPUT_HEIGHT);
 
