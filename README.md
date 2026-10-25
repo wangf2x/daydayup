@@ -63,3 +63,38 @@ Open the project root in WeChat Developer Tools and confirm the configured AppID
 ## Import contract
 
 See `cloudfunctions/shared/import-pipeline.js`. Production confidence thresholds must be calibrated using separate, anonymized real-photo datasets; there is no guessed default. The mock suite verifies control flow only and makes no claim about OCR accuracy.
+
+## 本地开发与部署
+
+### 首次克隆（重要）
+`node_modules/` 与 `miniprogram_npm/` 不纳入版本管理。克隆后：
+
+1. 在仓库根目录执行 `npm install`（仅测试需要）。
+2. 用微信开发者工具打开项目根目录，菜单 **工具 → 构建 npm**，生成 `miniprogram_npm/`，否则小程序无法启动。
+
+### 常用命令
+```bash
+npm test                                   # 全部单元测试（Node 内置 test runner）
+node --test tests/paper-marks.test.js      # 单个测试文件
+```
+
+### 云函数部署（CloudBase CLI）
+```bash
+tcb fn deploy <function> --dir <stage> -e <envId> --force --deployMode zip --install-dependency true
+tcb config update fn <function> --timeout 60 -e <envId>   # 视觉/OCR 函数必须放宽超时
+tcb logs search --query 'function_name:"<function>"' -e <envId>
+```
+
+### 云函数环境变量（每个函数单独配置）
+| 函数 | 变量 |
+| --- | --- |
+| `question-ocr` | `OCR_TENCENT_SECRET_ID` `OCR_TENCENT_SECRET_KEY` `OCR_TENCENT_REGION` |
+| `question-split` | `OCR_TENCENT_SECRET_ID` `OCR_TENCENT_SECRET_KEY` `OCR_TENCENT_REGION`（需 `ocr:QuestionSplitOCR` 权限） |
+| `paper-marks` | `TOKENHUB_API_KEY` `TOKENHUB_MODEL`（可选 `MARK_PROVIDER`） |
+| `paper-scan` | 需要 sharp 原生库，当前运行时无法加载，**暂不可用** |
+
+超时：`question-ocr` / `question-split` / `paper-marks` 均为 60 秒；默认 3 秒会导致真实照片调用失败。
+
+### 已知限制
+- `sharp` 在本环境云函数中加载即崩溃（`0 code exit unexpected`），因此服务端裁剪方案改为小程序端 canvas 裁剪。
+- TokenHub 的 `hunyuan-t1-vision` 单页耗时 4~16 秒，超过小程序 15 秒调用窗口，长耗时模型需异步化后再启用。
